@@ -26,6 +26,8 @@ You may want to skip sending requests for certain file extensions. Use `--ignore
 
 For convenience, `--ignore-static` is equivalent to `--ignore-extensions=gif,jpg,png,js,xlx,pptx,docx,css,ico,pdf`.
 
+The default timeout is 60000 milliseconds (60 seconds). You can change it with `--timeout=20000`.
+
 ## Limitations
 
 * The CLF parsing is pretty basic and won't cope if you have extra fields before the regular fields (at the end is OK).
@@ -43,6 +45,8 @@ For convenience, `--ignore-static` is equivalent to `--ignore-extensions=gif,jpg
 ## Changelog
 
 0.1.0: initial release. Happy Thanksgiving Eve (US).
+
+0.1.1: handle timeouts better. Default timeout is 60000 milliseconds, see `--timeout` option.
 
 ## About P'unk Avenue and Apostrophe
 

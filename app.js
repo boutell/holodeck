@@ -8,10 +8,12 @@ var clf = require('clf-parser');
 var http = require('http');
 
 var parallel = argv['max-sockets'] || 200;
+var timeout = argv['timeout'] || 60000;
+
 http.globalAgent.maxSockets = parallel;
 
 if (args.length !== 2) {
-  console.error('Usage: node app http://example.com clf-log-file.log [--max-sockets=200] [--ignore-extensions=gif,jpg,png,js,css]');
+  console.error('Usage: node app http://example.com clf-log-file.log [--max-sockets=200] [--ignore-extensions=gif,jpg,png,js,css] [--timeout=60000]');
   process.exit(1);
 }
 
@@ -71,11 +73,19 @@ return async.eachLimit(infos, parallel, function(info, callback) {
   valid++;
   return setTimeout(function() {
     var now = Date.now();
-    return request(args[0] + info.path, function(err, response, body) {
+    return request({
+      url: args[0] + info.path,
+      timeout: timeout
+    }, function(err, response, body) {
       var after = Date.now();
       var elapsed = after - now;
       if (err) {
-        return callback(err);
+        if (err.code === 'ETIMEDOUT') {
+          response = { statusCode: 'ETIMEDOUT' };
+          body = '';
+        } else {
+          return callback(err);
+        }
       }
       console.log(info.method + ' ' + info.path + ': ' + response.statusCode + ', ' + body.length + ' bytes (' + elapsed + 'ms)');
       totalTime += elapsed;
