@@ -13,7 +13,7 @@ var timeout = argv['timeout'] || 60000;
 http.globalAgent.maxSockets = parallel;
 
 if (args.length !== 2) {
-  console.error('Usage: node app http://example.com clf-log-file.log [--max-sockets=200] [--ignore-extensions=gif,jpg,png,js,css] [--timeout=60000]');
+  console.error('Usage: holodeck http://example.com clf-log-file.log [--max-sockets=200] [--ignore-extensions=gif,jpg,png,js,css] [--timeout=60000] [--verbose] [--speed=1]');
   process.exit(1);
 }
 
@@ -53,6 +53,11 @@ if (argv['ignore-extensions']) {
 
 var valid = 0;
 
+var speed = 1;
+if (argv.speed) {
+  speed = parseFloat(argv.speed);
+}
+
 return async.eachLimit(infos, parallel, function(info, callback) {
   if (info.method !== 'GET') {
     return setImmediate(callback);
@@ -66,13 +71,16 @@ return async.eachLimit(infos, parallel, function(info, callback) {
   if (!offset) {
     offset = now - info.time_local.getTime();
   }
-  var wait = (info.time_local.getTime() + offset) - now;
+  var wait = ((info.time_local.getTime() + offset) - now) / speed;
   // if (wait < 0) {
   //   console.log('BEHIND: ' + (-wait) + 'ms');
   // }
   valid++;
   return setTimeout(function() {
     var now = Date.now();
+    if (argv.verbose) {
+      console.log('GETTING ' + info.path);
+    }
     return request({
       url: args[0] + info.path,
       timeout: timeout

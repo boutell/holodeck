@@ -44,6 +44,8 @@ The default timeout is 60000 milliseconds (60 seconds). You can change it with `
 
 ## Changelog
 
+0.1.1: passing `--speed=2` runs through the log file at twice the actual speed it took place originally, etc. Passing `--verbose` prints URLs as soon as they are fetched as well as after the request ends.
+
 0.1.0: initial release. Happy Thanksgiving Eve (US).
 
 0.1.1: handle timeouts better. Default timeout is 60000 milliseconds, see `--timeout` option.
